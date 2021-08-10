@@ -7,6 +7,7 @@ import urllib
 import queue
 import threading
 import os
+import json
 
 
 queue = queue.Queue()
@@ -25,19 +26,26 @@ class CsdnBlogSpider(threading.Thread):
 		if not os.path.exists('blog'):
 			blog_path = os.path.join(os.path.abspath('.'),'blog')
 			os.mkdir(blog_path)
-			fout = open('./blog/' + filename + '.html', 'w')
-		try:
-			fout.write(data)
-		except IOError as e:
-			print(e)
+			with open('./blog/' + filename + '.html',"wb") as file:
+				file.write(data)
+		else:
+			with open('./blog/' + filename + '.html',"wb") as file:
+				file.write(data)
+		# try:
+		# 	fout.write(data)
+		# except IOError as e:
+		# 	print(e)
 		# finally:
 		# 	fout.close()
 
-	def find_title(self,data):
-		data = data.decode('utf-8')
+	def find_title(self,data1):
+    		# data is bytes
+		data = data1.decode()
+		print('----------------------------------',isinstance(data,str))
 		begin = data.find(r'<title') + 7
-		end = data.find('\r\n',begin)
+		end = data.find(r'</title>')
 		title = data[begin:end]
+		print('----------------------------------',title)
 		return title
 
 	def run(self):
